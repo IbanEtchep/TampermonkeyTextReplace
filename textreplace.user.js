@@ -7,6 +7,8 @@
 // @match        https://*.atlassian.net/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=atlassian.net
 // @grant        none
+// @downloadURL  https://github.com/IbanEtchep/TampermonkeyTextReplace/raw/main/textreplace.user.js
+// @updateURL    https://github.com/IbanEtchep/TampermonkeyTextReplace/raw/main/textreplace.user.js
 // ==/UserScript==
 
 (function () {
