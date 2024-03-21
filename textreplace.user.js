@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TextReplace
 // @namespace    http://tampermonkey.net/
-// @version      2024-02-20
+// @version      2024-03-21
 // @description  Remplace du texte sur une page web
 // @author       Iban
 // @match        https://*.atlassian.net/*
@@ -25,24 +25,30 @@
     }
   ];
 
-  function replaceText(element) {
-    if (!element || !element.childNodes) return
+function replaceText(element) {
+  if (!element || !element.childNodes) return
 
-    element.childNodes.forEach((node) => {
-      // Type 3 est un Node.TEXT_NODE
-      if (node.nodeType === 3) {
-        let value = node.nodeValue
-        replacements.forEach(({ pattern, replacement }) => {
-          value = value.replace(pattern, replacement);
-        });
-        node.nodeValue = value
-      } else if (node.nodeType === 1) { // Type 1 est un Node.ELEMENT_NODE
-        if (!['SCRIPT', 'STYLE'].includes(node.tagName)) {
-          replaceText(node)
-        }
+  element.childNodes.forEach((node) => {
+    if (node.nodeType === 3) { // Type 3 est un Node.TEXT_NODE
+      let originalValue = node.nodeValue;
+      let modifiedValue = originalValue;
+      replacements.forEach(({ pattern, replacement }) => {
+        modifiedValue = modifiedValue.replace(pattern, replacement);
+      });
+
+      if (originalValue !== modifiedValue) {
+        node.nodeValue = modifiedValue;
       }
-    })
-  }
+
+    } else if (node.nodeType === 1 && !node.hasAttribute('data-processed')) { // Type 1 est un Node.ELEMENT_NODE
+      if (!['SCRIPT', 'STYLE'].includes(node.tagName)) {
+        replaceText(node);
+        node.setAttribute('data-processed', 'true');
+      }
+    }
+  });
+}
+
 
   replaceText(document.body)
 
